@@ -31,15 +31,17 @@ const UPLOADS_DIR = isVercel ? path.resolve('/tmp', 'uploads') : path.resolve(pr
 const FORMS_DIR = path.join(UPLOADS_DIR, 'forms');
 const POSTS_DIR = path.join(UPLOADS_DIR, 'posts');
 
-[DATA_DIR, UPLOADS_DIR, FORMS_DIR, POSTS_DIR].forEach((dir) => {
-  try {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+function ensureDirs() {
+  [DATA_DIR, UPLOADS_DIR, FORMS_DIR, POSTS_DIR].forEach((dir) => {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch (e) {
+      // ignore
     }
-  } catch (e) {
-    console.warn(`Could not create directory ${dir}:`, e);
-  }
-});
+  });
+}
 
 // Paths to persistent JSON files
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
@@ -50,6 +52,7 @@ const AUDIT_FILE = path.join(DATA_DIR, 'audit_logs.json');
 // Helper to read JSON (with Firestore sync support)
 function readJson<T>(file: string, fallback: T): T {
   try {
+    ensureDirs();
     if (fs.existsSync(file)) {
       const content = fs.readFileSync(file, 'utf-8');
       return JSON.parse(content);
@@ -63,20 +66,22 @@ function readJson<T>(file: string, fallback: T): T {
 // Helper to write JSON safely & sync to Firestore if available
 function writeJson(file: string, data: any) {
   try {
+    ensureDirs();
     fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
     
     // Sync to Firestore in background if available
     if (firestoreDb) {
-      const fileName = path.basename(file);
-      const collectionName = fileName.replace('.json', '');
-      const batch = firestoreDb.batch();
-      // For arrays, store each item by its id or index
-      if (Array.isArray(data)) {
-        // To avoid stale docs, we can store collection items
-        // Or store a single doc 'all' containing items
-        const docRef = firestoreDb.collection(collectionName).doc('all_data');
-        batch.set(docRef, { items: data, updatedAt: new Date().toISOString() });
-        batch.commit().catch((e: any) => console.warn(`Firestore sync error for ${collectionName}:`, e));
+      try {
+        const fileName = path.basename(file);
+        const collectionName = fileName.replace('.json', '');
+        const batch = firestoreDb.batch();
+        if (Array.isArray(data)) {
+          const docRef = firestoreDb.collection(collectionName).doc('all_data');
+          batch.set(docRef, { items: data, updatedAt: new Date().toISOString() });
+          batch.commit().catch((e: any) => console.warn(`Firestore sync error for ${collectionName}:`, e));
+        }
+      } catch (fsErr) {
+        console.warn('Firestore write sync error:', fsErr);
       }
     }
   } catch (err) {
@@ -94,13 +99,17 @@ async function loadFromFirestoreIfNeeded() {
     for (let i = 0; i < collections.length; i++) {
       const col = collections[i];
       const file = files[i];
-      const docSnap = await firestoreDb.collection(col).doc('all_data').get();
-      if (docSnap.exists) {
-        const cloudData = docSnap.data()?.items;
-        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-          // If cloud has data, write to local file as well
-          fs.writeFileSync(file, JSON.stringify(cloudData, null, 2), 'utf-8');
+      try {
+        const docSnap = await firestoreDb.collection(col).doc('all_data').get();
+        if (docSnap.exists) {
+          const cloudData = docSnap.data()?.items;
+          if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+            ensureDirs();
+            fs.writeFileSync(file, JSON.stringify(cloudData, null, 2), 'utf-8');
+          }
         }
+      } catch (colErr) {
+        // ignore per-collection load errors
       }
     }
     console.log('Successfully synced data from Firestore database.');
