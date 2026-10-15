@@ -113,14 +113,14 @@ export const AuthGateView: React.FC<AuthGateViewProps> = ({ onLoginSuccess }) =>
       {/* Main Editorial Hero & Auth Section */}
       <main className="w-full max-w-6xl mx-auto px-6 py-6 flex-1 flex flex-col lg:flex-row items-center justify-between gap-12">
         {/* Left Editorial Branding */}
-        <div className="lg:w-1/2 space-y-6 lg:pl-4">
+        <div className="lg:w-1/2 space-y-6 lg:pl-6">
           <div className="inline-block text-xs uppercase tracking-widest text-[#979799] font-medium">
             Internal Document Suite
           </div>
 
-          <h1 className="font-steep-serif text-4xl sm:text-5xl lg:text-6xl text-[#17191c] leading-[1.18] tracking-tight">
-            수원시장애인종합복지관 <br />
-            <span className="italic text-[#5d2a1a]">스마트 문서지원</span> 포털
+          <h1 className="font-steep-serif text-3xl sm:text-4xl lg:text-5xl text-[#17191c] leading-[1.25] tracking-tight">
+            <span className="whitespace-nowrap">수원시장애인종합복지관</span> <br />
+            <span className="italic text-[#5d2a1a] whitespace-nowrap">스마트 문서지원</span> 포털
           </h1>
 
           <p className="text-[#777b86] text-base sm:text-lg leading-relaxed max-w-lg">

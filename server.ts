@@ -546,9 +546,11 @@ function initStorage() {
   }
 }
 
-loadFromFirestoreIfNeeded().then(() => {
-  initStorage();
-});
+// Initialize storage synchronously immediately so master admin is guaranteed to exist
+initStorage();
+
+// Load from Firestore in background if available
+loadFromFirestoreIfNeeded();
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
