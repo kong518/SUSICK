@@ -3,7 +3,16 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import * as admin from 'firebase-admin';
-import firebaseConfig from './firebase-applet-config.json';
+
+let firebaseConfig: any = {};
+try {
+  const configPath = path.resolve(process.cwd(), 'firebase-applet-config.json');
+  if (fs.existsSync(configPath)) {
+    firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  }
+} catch (e) {
+  console.warn('Could not load firebase-applet-config.json:', e);
+}
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
