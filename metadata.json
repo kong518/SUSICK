@@ -1,0 +1,6 @@
+{
+  "name": "수원시장애인종합복지관 스마트 문서업무 포털",
+  "description": "수원시장애인종합복지관 전용 스마트 문서업무 지원 시스템 - PDF 통합 편집(병합·분할·수정), 도장/서명 누끼 제거, 한글(HWP) 양식함, 이용자 건의사항 및 보안 감사로그",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,167 @@
+[
+  {
+    "id": "log-1792043650778-5ta5h",
+    "userId": "user-1792043635559-q3bz",
+    "username": "worker_demo",
+    "name": "이복지",
+    "department": "활동지원팀",
+    "action": "USER_DELETED",
+    "category": "ADMIN",
+    "details": "관리자 [시스템관리자]가 [이복지(worker_demo)] 계정을 영구 삭제함",
+    "timestamp": "2026-10-15T05:54:10.778Z"
+  },
+  {
+    "id": "log-1792043644899-nljgu",
+    "userId": "user-1792043635559-q3bz",
+    "username": "worker_demo",
+    "name": "이복지",
+    "department": "활동지원팀",
+    "action": "LOGIN_SUCCESS",
+    "category": "AUTH",
+    "details": "일반 직원 로그인 완료 (이복지 / 활동지원팀)",
+    "timestamp": "2026-10-15T05:54:04.899Z"
+  },
+  {
+    "id": "log-1792043644872-cnm8f",
+    "userId": "user-1792043635559-q3bz",
+    "username": "worker_demo",
+    "name": "이복지",
+    "department": "활동지원팀",
+    "action": "USER_APPROVED",
+    "category": "ADMIN",
+    "details": "관리자 [시스템관리자]가 [이복지(worker_demo)] 계정을 승인함",
+    "timestamp": "2026-10-15T05:54:04.872Z"
+  },
+  {
+    "id": "log-1792043635575-sdu37",
+    "userId": "user-1792043635559-q3bz",
+    "username": "worker_demo",
+    "name": "이복지",
+    "department": "활동지원팀",
+    "action": "LOGIN_BLOCKED_PENDING",
+    "category": "AUTH",
+    "details": "미승인 계정 로그인 시도 대기 (이복지)",
+    "timestamp": "2026-10-15T05:53:55.575Z"
+  },
+  {
+    "id": "log-1792043635559-n3myv",
+    "userId": "user-1792043635559-q3bz",
+    "username": "worker_demo",
+    "name": "이복지",
+    "department": "활동지원팀",
+    "action": "USER_REGISTERED",
+    "category": "AUTH",
+    "details": "신규 회원가입 신청 완료 (승인 대기중: 이복지 / 활동지원팀)",
+    "timestamp": "2026-10-15T05:53:55.559Z"
+  },
+  {
+    "id": "log-1792043630587-60bkr",
+    "userId": "admin-master",
+    "username": "시스템관리자",
+    "name": "시스템관리자",
+    "department": "총괄운영 / 전산기획실",
+    "action": "LOGIN_SUCCESS",
+    "category": "AUTH",
+    "details": "시스템관리자(마스터) 정상 로그인 완료",
+    "timestamp": "2026-10-15T05:53:50.587Z"
+  },
+  {
+    "id": "log-1792041132541-o2q8v",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "USER_UNBANNED",
+    "category": "ADMIN",
+    "details": "관리자 [시스템관리자]가 [김직원(test_staff)] 계정 차단을 해제함",
+    "timestamp": "2026-10-15T05:12:12.541Z"
+  },
+  {
+    "id": "log-1792041122856-omubs",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "LOGIN_BLOCKED_BANNED",
+    "category": "AUTH",
+    "details": "차단된 계정 로그인 시도 차단 (김직원)",
+    "timestamp": "2026-10-15T05:12:02.856Z"
+  },
+  {
+    "id": "log-1792041122839-rt24g",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "USER_BANNED",
+    "category": "ADMIN",
+    "details": "관리자 [시스템관리자]가 [김직원(test_staff)] 계정을 차단(벤)함 (사유: 규정위반)",
+    "timestamp": "2026-10-15T05:12:02.839Z"
+  },
+  {
+    "id": "log-1792041117235-5i6hz",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "LOGIN_SUCCESS",
+    "category": "AUTH",
+    "details": "일반 직원 로그인 완료 (김직원 / 재활사업팀)",
+    "timestamp": "2026-10-15T05:11:57.235Z"
+  },
+  {
+    "id": "log-1792041117219-263v2",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "USER_APPROVED",
+    "category": "ADMIN",
+    "details": "관리자 [시스템관리자]가 [김직원(test_staff)] 계정을 승인함",
+    "timestamp": "2026-10-15T05:11:57.219Z"
+  },
+  {
+    "id": "log-1792041111162-c1dc0",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "LOGIN_BLOCKED_PENDING",
+    "category": "AUTH",
+    "details": "미승인 계정 로그인 시도 대기 (김직원)",
+    "timestamp": "2026-10-15T05:11:51.162Z"
+  },
+  {
+    "id": "log-1792041111137-5k3zw",
+    "userId": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "action": "USER_REGISTERED",
+    "category": "AUTH",
+    "details": "신규 회원가입 신청 완료 (승인 대기중: 김직원 / 재활사업팀)",
+    "timestamp": "2026-10-15T05:11:51.137Z"
+  },
+  {
+    "id": "log-1792041100269-x2z3a",
+    "userId": "admin-master",
+    "username": "시스템관리자",
+    "name": "시스템관리자",
+    "department": "총괄운영 / 전산기획실",
+    "action": "LOGIN_SUCCESS",
+    "category": "AUTH",
+    "details": "시스템관리자(마스터) 정상 로그인 완료",
+    "timestamp": "2026-10-15T05:11:40.269Z"
+  },
+  {
+    "id": "audit-init-1",
+    "userId": "admin-master",
+    "username": "시스템관리자",
+    "name": "시스템관리자",
+    "department": "전산기획실",
+    "action": "SYSTEM_BOOT",
+    "category": "ADMIN",
+    "details": "스마트 문서업무 포털 시스템 초기화 및 보안 감사기록 시작",
+    "timestamp": "2026-10-10T09:00:00.000Z"
+  }
+]

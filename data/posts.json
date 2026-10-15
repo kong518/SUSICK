@@ -1,0 +1,118 @@
+[
+  {
+    "id": "post-prog-1",
+    "title": "[반영완료] PDF 여러 장 병합 시 마우스 순서 변경(위/아래) 기능 건의",
+    "category": "기능 개선",
+    "content": "스마트 문서지원 포털에서 여러 PDF 서류를 하나로 합칠 때, 파일 업로드 후 상/하 순서를 간편하게 조정할 수 있는 버튼이 있으면 좋겠습니다. 복수의 첨부 증빙서류를 순서대로 취합할 때 매우 필요합니다.",
+    "authorId": "user-sample-1",
+    "authorName": "이지원",
+    "department": "상담사례관리팀",
+    "createdAt": "2026-10-13T09:30:00.000Z",
+    "views": 42,
+    "likes": 16,
+    "likedBy": [],
+    "status": "반영완료",
+    "isNotice": true,
+    "comments": [
+      {
+        "id": "c-101",
+        "authorId": "admin-master",
+        "authorName": "시스템관리자",
+        "department": "전산기획실",
+        "content": "소중한 프로그램 건의 감사드립니다. PDF 통합도구 파일 목록에 [위로 이동] 및 [아래로 이동] 순서 재배치 버튼을 적용 완료하였습니다.",
+        "createdAt": "2026-10-13T14:15:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post-prog-2",
+    "title": "[반영완료] 활동지원사 급여제공기록지 2026년 최신 개정판 서식 교체 요청",
+    "category": "신규 서식 요청",
+    "content": "활동지원팀입니다. 보건복지부 최신 지침에 따른 2026년도 신규 활동지원 급여제공기록지 및 출근부 HWP 공식 양식으로 교체 업로드 부탁드립니다.",
+    "authorId": "user-sample-2",
+    "authorName": "박선우",
+    "department": "활동지원팀",
+    "createdAt": "2026-10-13T11:00:00.000Z",
+    "views": 65,
+    "likes": 23,
+    "likedBy": [],
+    "status": "반영완료",
+    "isNotice": true,
+    "comments": [
+      {
+        "id": "c-102",
+        "authorId": "admin-master",
+        "authorName": "시스템관리자",
+        "department": "전산기획실",
+        "content": "2026년 개정 표준 서식으로 양식함 내 파일 교체 및 영구 보존 등록을 완료하였습니다. 한글 서식함에서 바로 다운로드하실 수 있습니다.",
+        "createdAt": "2026-10-13T16:20:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post-prog-3",
+    "title": "[검토중] 서식함 내 실시간 인기 순위 외 개인별 '즐겨찾는 양식' 북마크 기능 희망",
+    "category": "시스템 개선",
+    "content": "대시보드에 실시간 인기 서식 TOP 4가 네이버 실시간 검색순위처럼 보여서 자주 쓰는 문서를 찾기 아주 편리합니다! 여기에 추가로 직원 각자가 매일 쓰는 서식을 별표(★)로 즐겨찾기해 둘 수 있는 개인 보관함 기능도 있으면 더욱 편리할 것 같습니다.",
+    "authorId": "user-sample-3",
+    "authorName": "김행정",
+    "department": "기획행정팀",
+    "createdAt": "2026-10-14T10:15:00.000Z",
+    "views": 31,
+    "likes": 18,
+    "likedBy": [],
+    "status": "검토중",
+    "isNotice": false,
+    "comments": [
+      {
+        "id": "c-103",
+        "authorId": "admin-master",
+        "authorName": "시스템관리자",
+        "department": "전산기획실",
+        "content": "업무 효율성을 높여주는 좋은 제안입니다. 직원별 개인 즐겨찾기 북마크 및 퀵 다운로드 기능을 적극 검토 중에 있습니다.",
+        "createdAt": "2026-10-14T15:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post-prog-4",
+    "title": "[답변완료] 도장 직인 배경 투명화(누끼) 시 인주 색상 민감도 조절 문의",
+    "category": "사용 문의",
+    "content": "스캔된 문서에서 붉은색 도장 직인을 추출할 때 문서 배경의 연한 그림자나 얼룩이 함께 따지는 경우가 있습니다. 깨끗하게 붉은 인주만 추출하는 설정 팁을 알려주세요.",
+    "authorId": "user-sample-4",
+    "authorName": "정복지",
+    "department": "평생교육팀",
+    "createdAt": "2026-10-14T14:40:00.000Z",
+    "views": 27,
+    "likes": 9,
+    "likedBy": [],
+    "status": "답변완료",
+    "isNotice": false,
+    "comments": [
+      {
+        "id": "c-104",
+        "authorId": "admin-master",
+        "authorName": "시스템관리자",
+        "department": "전산기획실",
+        "content": "누끼따기 도구의 '배경 임계값/민감도' 슬라이더를 55~65% 구간에 두시면 종이 그림자는 소거되고 붉은색 인주 선만 선명하게 추출됩니다.",
+        "createdAt": "2026-10-14T17:30:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "post-prog-5",
+    "title": "[접수완료] 모바일·태블릿 접속 시 PDF 전자서명 패드 터치 감도 개선 건",
+    "category": "기능 개선",
+    "content": "외부 수급자 가정 방문 및 현장 출장 시 태블릿으로 본 포털에 접속해 이용자 서약서나 기록지에 서명을 받을 때 펜 터치 감도가 더 부드럽게 반응하면 좋겠습니다.",
+    "authorId": "user-sample-5",
+    "authorName": "한지원",
+    "department": "활동지원팀",
+    "createdAt": "2026-10-15T08:10:00.000Z",
+    "views": 18,
+    "likes": 11,
+    "likedBy": [],
+    "status": "접수완료",
+    "isNotice": false,
+    "comments": []
+  }
+]

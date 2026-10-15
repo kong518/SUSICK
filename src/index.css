@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-black: #17191c;
+  --color-paper-white: #ffffff;
+  --color-mist-gray: #f2f2f3;
+  --color-fog-white: #fafafb;
+  --color-slate-gray: #777b86;
+  --color-ash-gray: #979799;
+  --color-smoke-gray: #a3a6af;
+  --color-blush-peach: #fbe1d1;
+  --color-sienna-brown: #5d2a1a;
+
+  --font-serif: 'Source Serif 4', Georgia, ui-serif, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #fafafb;
+  color: #17191c;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Serif Display Typography */
+.font-steep-serif {
+  font-family: 'Source Serif 4', Georgia, ui-serif, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Steep Pill Buttons */
+.btn-steep-primary {
+  background-color: #17191c;
+  color: #ffffff;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-steep-primary:hover {
+  background-color: #2c2f35;
+}
+.btn-steep-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-steep-ghost {
+  background-color: transparent;
+  color: #17191c;
+  border: 1px solid #17191c;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 9px 23px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-steep-ghost:hover {
+  background-color: #f2f2f3;
+}
+.btn-steep-ghost:active {
+  transform: scale(0.98);
+}
+
+.btn-steep-subtle {
+  background-color: #f2f2f3;
+  color: #17191c;
+  font-weight: 500;
+  border-radius: 9999px;
+  padding: 8px 18px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-steep-subtle:hover {
+  background-color: #e5e5e7;
+}
+
+/* Steep Cards & Surfaces */
+.steep-card-neutral {
+  background-color: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #ececec;
+  box-shadow: 0 0 0 1px rgba(4, 23, 43, 0.03), 0 8px 24px -4px rgba(0, 0, 0, 0.04);
+}
+
+.steep-card-mist {
+  background-color: #f2f2f3;
+  border-radius: 24px;
+}
+
+.steep-card-peach {
+  background-color: #fbe1d1;
+  color: #5d2a1a;
+  border-radius: 24px;
+}
+
+.steep-floating-artifact {
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 0 0 1px rgba(4, 23, 43, 0.05), 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+/* Input Fields */
+.steep-input {
+  background-color: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-size: 15px;
+  transition: border-color 0.15s ease;
+}
+.steep-input:focus {
+  outline: none;
+  border-color: #17191c;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

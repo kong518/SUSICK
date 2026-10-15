@@ -1,0 +1,28 @@
+[
+  {
+    "id": "admin-master",
+    "username": "시스템관리자",
+    "name": "시스템관리자",
+    "department": "총괄운영 / 전산기획실",
+    "position": "최고관리자",
+    "password": "9311",
+    "role": "admin",
+    "status": "approved",
+    "createdAt": "2026-10-15T05:11:32.870Z",
+    "approvedAt": "2026-10-15T05:11:32.870Z",
+    "lastLoginAt": "2026-10-15T05:53:50.586Z"
+  },
+  {
+    "id": "user-1792041111136-rx2e",
+    "username": "test_staff",
+    "name": "김직원",
+    "department": "재활사업팀",
+    "position": "사회복지사",
+    "password": "password123",
+    "role": "user",
+    "status": "approved",
+    "createdAt": "2026-10-15T05:11:51.136Z",
+    "approvedAt": "2026-10-15T05:11:57.219Z",
+    "lastLoginAt": "2026-10-15T05:11:57.235Z"
+  }
+]
