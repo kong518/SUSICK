@@ -113,7 +113,7 @@ export const AuthGateView: React.FC<AuthGateViewProps> = ({ onLoginSuccess }) =>
       {/* Main Editorial Hero & Auth Section */}
       <main className="w-full max-w-6xl mx-auto px-6 py-6 flex-1 flex flex-col lg:flex-row items-center justify-between gap-12">
         {/* Left Editorial Branding */}
-        <div className="lg:w-1/2 space-y-6">
+        <div className="lg:w-1/2 space-y-6 lg:pl-4">
           <div className="inline-block text-xs uppercase tracking-widest text-[#979799] font-medium">
             Internal Document Suite
           </div>

@@ -24,15 +24,20 @@ try {
   console.warn('Firebase Admin init warning (falling back to local storage):', err);
 }
 
-// Ensure data and uploads directories exist
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const UPLOADS_DIR = path.resolve(process.cwd(), 'uploads');
+// Ensure data and uploads directories exist (use /tmp on Vercel for writeable storage)
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL === 'true' || process.env.NODE_ENV === 'production';
+const DATA_DIR = isVercel ? path.resolve('/tmp', 'data') : path.resolve(process.cwd(), 'data');
+const UPLOADS_DIR = isVercel ? path.resolve('/tmp', 'uploads') : path.resolve(process.cwd(), 'uploads');
 const FORMS_DIR = path.join(UPLOADS_DIR, 'forms');
 const POSTS_DIR = path.join(UPLOADS_DIR, 'posts');
 
 [DATA_DIR, UPLOADS_DIR, FORMS_DIR, POSTS_DIR].forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (e) {
+    console.warn(`Could not create directory ${dir}:`, e);
   }
 });
 
