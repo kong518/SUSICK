@@ -112,7 +112,7 @@ async function loadFromFirestoreIfNeeded() {
         const docSnap = await firestoreDb.collection(col).doc('all_data').get();
         if (docSnap.exists) {
           const cloudData = docSnap.data()?.items;
-          if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+          if (cloudData && Array.isArray(cloudData)) {
             ensureDirs();
             fs.writeFileSync(file, JSON.stringify(cloudData, null, 2), 'utf-8');
           }
@@ -227,13 +227,10 @@ async function initStorage() {
   }
 
   // 2. Default Seed Forms (3 Categories: 이용자 양식, 활동지원사 양식, 행정양식)
+  const formsFileExists = fs.existsSync(FORMS_FILE);
   let forms = readJson<DocForm[]>(FORMS_FILE, []);
-  // If forms are empty or from old categories, seed with the exact 3 categories requested
-  const hasNewCategories = forms.some(
-    (f) => f.category === '이용자 양식' || f.category === '활동지원사 양식' || f.category === '행정양식'
-  );
 
-  if (!hasNewCategories) {
+  if (!formsFileExists) {
     const seedFormsMeta = [
       // 1. 이용자 양식
       {
