@@ -18,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Initialize Firebase Admin Firestore
+// Initialize Firebase Admin Firestore with explicit database ID
 let firestoreDb: any = null;
 try {
   const adminAny = admin as any;
@@ -27,10 +27,36 @@ try {
       projectId: firebaseConfig.projectId,
     });
   }
-  firestoreDb = adminAny.firestore();
-  console.log('Firebase Admin Firestore initialized successfully for multi-user persistence.');
+  const dbId = firebaseConfig.firestoreDatabaseId;
+  if (dbId) {
+    firestoreDb = adminAny.firestore(adminAny.app(), dbId);
+  } else {
+    firestoreDb = adminAny.firestore();
+  }
+  console.log('Firebase Admin Firestore initialized successfully with database ID:', dbId || '(default)');
 } catch (err: any) {
   console.warn('Firebase Admin init warning (falling back to local storage):', err);
+}
+
+// Ensure repository data files are synced into /tmp on Vercel deployments so user uploads are never lost
+function syncRepoDataToTmpIfNeeded() {
+  if (!isVercel) return;
+  try {
+    const repoDataDir = path.resolve(process.cwd(), 'data');
+    if (fs.existsSync(repoDataDir)) {
+      ensureDirs();
+      const files = ['users.json', 'forms.json', 'deleted_forms.json', 'posts.json', 'audit_logs.json'];
+      files.forEach((f) => {
+        const repoFile = path.join(repoDataDir, f);
+        const tmpFile = path.join(DATA_DIR, f);
+        if (fs.existsSync(repoFile) && !fs.existsSync(tmpFile)) {
+          fs.copyFileSync(repoFile, tmpFile);
+        }
+      });
+    }
+  } catch (e) {
+    console.warn('Failed to sync repo data to /tmp:', e);
+  }
 }
 
 // Ensure data and uploads directories exist (use /tmp on Vercel for writeable storage)
@@ -604,7 +630,8 @@ async function initStorage() {
   }
 }
 
-// Load from Firestore first, then init storage at startup
+// Sync repo data to /tmp if needed, then load from Firestore, then init storage at startup
+syncRepoDataToTmpIfNeeded();
 await loadFromFirestoreIfNeeded();
 await initStorage();
 
