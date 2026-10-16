@@ -55,6 +55,7 @@ function ensureDirs() {
 // Paths to persistent JSON files
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const FORMS_FILE = path.join(DATA_DIR, 'forms.json');
+const DELETED_FORMS_FILE = path.join(DATA_DIR, 'deleted_forms.json');
 const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
 const AUDIT_FILE = path.join(DATA_DIR, 'audit_logs.json');
 
@@ -98,12 +99,13 @@ async function writeJson(file: string, data: any) {
   }
 }
 
-// Helper to load from Firestore on startup if local is empty or to merge
+// Helper to load from Firestore on startup and merge local & cloud forms robustly
 async function loadFromFirestoreIfNeeded() {
   if (!firestoreDb) return;
   try {
-    const collections = ['users', 'forms', 'posts', 'audit_logs'];
-    const files = [USERS_FILE, FORMS_FILE, POSTS_FILE, AUDIT_FILE];
+    // 1. Sync users, posts, audit_logs
+    const collections = ['users', 'posts', 'audit_logs'];
+    const files = [USERS_FILE, POSTS_FILE, AUDIT_FILE];
     
     for (let i = 0; i < collections.length; i++) {
       const col = collections[i];
@@ -118,10 +120,51 @@ async function loadFromFirestoreIfNeeded() {
           }
         }
       } catch (colErr) {
-        // ignore per-collection load errors
+        // ignore
       }
     }
-    console.log('Successfully synced data from Firestore database.');
+
+    // 2. Robust merge for forms & deleted_forms so no uploaded form is ever lost and deleted forms stay deleted
+    let localForms = readJson<DocForm[]>(FORMS_FILE, []);
+    let localDeleted = readJson<string[]>(DELETED_FORMS_FILE, []);
+
+    let cloudForms: DocForm[] = [];
+    let cloudDeleted: string[] = [];
+
+    try {
+      const formSnap = await firestoreDb.collection('forms').doc('all_data').get();
+      if (formSnap.exists) {
+        const items = formSnap.data()?.items;
+        if (Array.isArray(items)) cloudForms = items;
+      }
+      const delSnap = await firestoreDb.collection('deleted_forms').doc('all_data').get();
+      if (delSnap.exists) {
+        const items = delSnap.data()?.items;
+        if (Array.isArray(items)) cloudDeleted = items;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const allDeleted = Array.from(new Set([...localDeleted, ...cloudDeleted]));
+
+    const formMap = new Map<string, DocForm>();
+    [...localForms, ...cloudForms].forEach((f) => {
+      if (f && f.id && !allDeleted.includes(f.id)) {
+        formMap.set(f.id, f);
+      }
+    });
+
+    const mergedForms = Array.from(formMap.values());
+
+    ensureDirs();
+    fs.writeFileSync(FORMS_FILE, JSON.stringify(mergedForms, null, 2), 'utf-8');
+    fs.writeFileSync(DELETED_FORMS_FILE, JSON.stringify(allDeleted, null, 2), 'utf-8');
+
+    await firestoreDb.collection('forms').doc('all_data').set({ items: mergedForms, updatedAt: new Date().toISOString() });
+    await firestoreDb.collection('deleted_forms').doc('all_data').set({ items: allDeleted, updatedAt: new Date().toISOString() });
+
+    console.log('Successfully merged and synced forms and deleted forms from Firestore.');
   } catch (e) {
     console.warn('Failed to load initial data from Firestore:', e);
   }
@@ -1051,6 +1094,13 @@ app.delete('/api/forms/:id', async (req, res) => {
 
   forms = forms.filter((f) => f.id !== id);
   await writeJson(FORMS_FILE, forms);
+
+  // Track in deleted forms list so it never reappears
+  const deletedIds = readJson<string[]>(DELETED_FORMS_FILE, []);
+  if (!deletedIds.includes(id)) {
+    deletedIds.push(id);
+    await writeJson(DELETED_FORMS_FILE, deletedIds);
+  }
 
   await recordAudit({
     userId: 'admin',
