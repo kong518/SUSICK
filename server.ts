@@ -72,22 +72,22 @@ function readJson<T>(file: string, fallback: T): T {
   return fallback;
 }
 
-// Helper to write JSON safely & sync to Firestore if available
-function writeJson(file: string, data: any) {
+// Helper to write JSON safely & sync to Firestore synchronously/awaited for Vercel persistence
+async function writeJson(file: string, data: any) {
   try {
     ensureDirs();
     fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
     
-    // Sync to Firestore in background if available
+    // Sync to Firestore if available
     if (firestoreDb) {
       try {
         const fileName = path.basename(file);
         const collectionName = fileName.replace('.json', '');
-        const batch = firestoreDb.batch();
+        const docRef = firestoreDb.collection(collectionName).doc('all_data');
         if (Array.isArray(data)) {
-          const docRef = firestoreDb.collection(collectionName).doc('all_data');
-          batch.set(docRef, { items: data, updatedAt: new Date().toISOString() });
-          batch.commit().catch((e: any) => console.warn(`Firestore sync error for ${collectionName}:`, e));
+          await docRef.set({ items: data, updatedAt: new Date().toISOString() });
+        } else {
+          await docRef.set({ data, updatedAt: new Date().toISOString() });
         }
       } catch (fsErr) {
         console.warn('Firestore write sync error:', fsErr);
@@ -202,7 +202,7 @@ interface AuditLog {
 }
 
 // Initialize seed users if not present
-function initStorage() {
+async function initStorage() {
   // 1. Users
   const users = readJson<User[]>(USERS_FILE, []);
   const hasMasterAdmin = users.some(
@@ -223,7 +223,7 @@ function initStorage() {
       approvedAt: new Date().toISOString(),
     };
     users.unshift(masterAdmin);
-    writeJson(USERS_FILE, users);
+    await writeJson(USERS_FILE, users);
   }
 
   // 2. Default Seed Forms (3 Categories: 이용자 양식, 활동지원사 양식, 행정양식)
@@ -428,7 +428,7 @@ function initStorage() {
 
     // Add back any custom forms user had created
     forms = [...forms, ...userUploadedForms];
-    writeJson(FORMS_FILE, forms);
+    await writeJson(FORMS_FILE, forms);
   }
 
   // 3. Default Posts -> 프로그램 이용자 건의사항 (포털/프로그램 이용자 피드백)
@@ -541,7 +541,7 @@ function initStorage() {
         ],
       },
     ];
-    writeJson(POSTS_FILE, posts);
+    await writeJson(POSTS_FILE, posts);
   }
 
   // 4. Default Audit Logs
@@ -560,22 +560,20 @@ function initStorage() {
         timestamp: '2026-10-10T09:00:00.000Z',
       },
     ];
-    writeJson(AUDIT_FILE, auditLogs);
+    await writeJson(AUDIT_FILE, auditLogs);
   }
 }
 
-// Initialize storage synchronously immediately so master admin is guaranteed to exist
-initStorage();
-
-// Load from Firestore in background if available
-loadFromFirestoreIfNeeded();
+// Load from Firestore first, then init storage at startup
+await loadFromFirestoreIfNeeded();
+await initStorage();
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Helper to add audit log
-function recordAudit(log: Omit<AuditLog, 'id' | 'timestamp'>) {
+async function recordAudit(log: Omit<AuditLog, 'id' | 'timestamp'>) {
   const logs = readJson<AuditLog[]>(AUDIT_FILE, []);
   const newLog: AuditLog = {
     id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -587,7 +585,7 @@ function recordAudit(log: Omit<AuditLog, 'id' | 'timestamp'>) {
   if (logs.length > 1000) {
     logs.length = 1000;
   }
-  writeJson(AUDIT_FILE, logs);
+  await writeJson(AUDIT_FILE, logs);
 }
 
 // Multer Storage for HWP forms
@@ -608,7 +606,7 @@ const uploadForm = multer({ storage: formStorage, limits: { fileSize: 50 * 1024 
 
 // --- 1. AUTH ROUTES ---
 // Login: handles both master admin ('시스템관리자' / '9311') and registered staff
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ message: '아이디(계정이름)와 비밀번호를 입력해주세요.' });
@@ -636,9 +634,9 @@ app.post('/api/auth/login', (req, res) => {
       users.unshift(admin);
     }
     admin.lastLoginAt = new Date().toISOString();
-    writeJson(USERS_FILE, users);
+    await writeJson(USERS_FILE, users);
 
-    recordAudit({
+    await recordAudit({
       userId: admin.id,
       username: admin.username,
       name: admin.name,
@@ -659,7 +657,7 @@ app.post('/api/auth/login', (req, res) => {
   );
 
   if (!foundUser) {
-    recordAudit({
+    await recordAudit({
       userId: 'anonymous',
       username: cleanUsername,
       name: '미식별',
@@ -673,7 +671,7 @@ app.post('/api/auth/login', (req, res) => {
 
   // Check user status
   if (foundUser.status === 'banned') {
-    recordAudit({
+    await recordAudit({
       userId: foundUser.id,
       username: foundUser.username,
       name: foundUser.name,
@@ -689,7 +687,7 @@ app.post('/api/auth/login', (req, res) => {
   }
 
   if (foundUser.status === 'pending') {
-    recordAudit({
+    await recordAudit({
       userId: foundUser.id,
       username: foundUser.username,
       name: foundUser.name,
@@ -706,9 +704,9 @@ app.post('/api/auth/login', (req, res) => {
 
   // Approved user
   foundUser.lastLoginAt = new Date().toISOString();
-  writeJson(USERS_FILE, users);
+  await writeJson(USERS_FILE, users);
 
-  recordAudit({
+  await recordAudit({
     userId: foundUser.id,
     username: foundUser.username,
     name: foundUser.name,
@@ -723,7 +721,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // Registration (신규등록) -> Always sets status to 'pending'
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   const { username, password, name, department, position, phone } = req.body;
   if (!username || !password || !name) {
     return res.status(400).json({ message: '아이디, 비밀번호, 성명을 모두 입력해주세요.' });
@@ -754,9 +752,9 @@ app.post('/api/auth/register', (req, res) => {
   };
 
   users.push(newUser);
-  writeJson(USERS_FILE, users);
+  await writeJson(USERS_FILE, users);
 
-  recordAudit({
+  await recordAudit({
     userId: newUser.id,
     username: newUser.username,
     name: newUser.name,
@@ -934,7 +932,7 @@ app.get('/api/forms', (req, res) => {
 });
 
 // Upload new form (Admin or staff)
-app.post('/api/forms', uploadForm.single('file'), (req, res) => {
+app.post('/api/forms', uploadForm.single('file'), async (req, res) => {
   const { title, category, department, description, uploaderName, uploaderId } = req.body;
   const file = req.file;
 
@@ -980,9 +978,9 @@ app.post('/api/forms', uploadForm.single('file'), (req, res) => {
   };
 
   forms.unshift(newForm);
-  writeJson(FORMS_FILE, forms);
+  await writeJson(FORMS_FILE, forms);
 
-  recordAudit({
+  await recordAudit({
     userId: uploaderId || 'admin-master',
     username: uploaderName || '시스템관리자',
     name: uploaderName || '시스템관리자',
@@ -996,7 +994,7 @@ app.post('/api/forms', uploadForm.single('file'), (req, res) => {
 });
 
 // Download form file
-app.get('/api/forms/:id/download', (req, res) => {
+app.get('/api/forms/:id/download', async (req, res) => {
   const { id } = req.params;
   const { userId, userName, userDept } = req.query;
   const forms = readJson<DocForm[]>(FORMS_FILE, []);
@@ -1008,10 +1006,10 @@ app.get('/api/forms/:id/download', (req, res) => {
 
   // Increment download count
   form.downloadCount = (form.downloadCount || 0) + 1;
-  writeJson(FORMS_FILE, forms);
+  await writeJson(FORMS_FILE, forms);
 
   // Record audit
-  recordAudit({
+  await recordAudit({
     userId: String(userId || 'guest'),
     username: String(userName || '익명'),
     name: String(userName || '익명사용자'),
@@ -1034,7 +1032,7 @@ app.get('/api/forms/:id/download', (req, res) => {
 });
 
 // Delete form
-app.delete('/api/forms/:id', (req, res) => {
+app.delete('/api/forms/:id', async (req, res) => {
   const { id } = req.params;
   const { adminName } = req.body;
   let forms = readJson<DocForm[]>(FORMS_FILE, []);
@@ -1055,9 +1053,9 @@ app.delete('/api/forms/:id', (req, res) => {
   }
 
   forms = forms.filter((f) => f.id !== id);
-  writeJson(FORMS_FILE, forms);
+  await writeJson(FORMS_FILE, forms);
 
-  recordAudit({
+  await recordAudit({
     userId: 'admin',
     username: adminName || '시스템관리자',
     name: adminName || '시스템관리자',
