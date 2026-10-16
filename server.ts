@@ -992,9 +992,31 @@ app.delete('/api/admin/audit-logs', (req, res) => {
 
 // --- 3. DOCUMENT FORMS (양식함) ---
 
-// Get all forms
-app.get('/api/forms', (req, res) => {
-  const forms = readJson<DocForm[]>(FORMS_FILE, []);
+// Get all forms (with live Firestore fetch to ensure multi-instance consistency on Vercel)
+app.get('/api/forms', async (req, res) => {
+  let forms = readJson<DocForm[]>(FORMS_FILE, []);
+  if (firestoreDb) {
+    try {
+      const formSnap = await firestoreDb.collection('forms').doc('all_data').get();
+      if (formSnap.exists) {
+        const cloudItems = formSnap.data()?.items;
+        if (Array.isArray(cloudItems)) {
+          const deletedIds = readJson<string[]>(DELETED_FORMS_FILE, []);
+          const formMap = new Map<string, DocForm>();
+          [...forms, ...cloudItems].forEach((f) => {
+            if (f && f.id && !deletedIds.includes(f.id)) {
+              formMap.set(f.id, f);
+            }
+          });
+          forms = Array.from(formMap.values());
+          ensureDirs();
+          fs.writeFileSync(FORMS_FILE, JSON.stringify(forms, null, 2), 'utf-8');
+        }
+      }
+    } catch (e) {
+      console.warn('Live Firestore forms fetch warning:', e);
+    }
+  }
   return res.json({ forms });
 });
 
