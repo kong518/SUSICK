@@ -109,7 +109,7 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
     }
   };
 
-  const categories = ['전체', '실시간 TOP 4', '이용자 양식', '활동지원사 양식', '행정양식'];
+  const categories = ['전체', '실시간 TOP 4', '이용자 양식', '활동지원사 양식', '행정양식 및 회계서류'];
 
   const showToast = (text: string, type: 'success' | 'error' = 'success') => {
     setToastMessage({ text, type });
@@ -476,7 +476,7 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
                   >
                     <option value="이용자 양식">이용자 양식</option>
                     <option value="활동지원사 양식">활동지원사 양식</option>
-                    <option value="행정양식">행정양식</option>
+                    <option value="행정양식 및 회계서류">행정양식 및 회계서류</option>
                   </select>
                 </div>
 
@@ -551,6 +551,139 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
                   className="px-5 py-2 rounded-full bg-[#17191c] hover:bg-[#2c2f35] text-white text-xs font-semibold cursor-pointer disabled:opacity-50 transition-all shadow-xs"
                 >
                   {isUploading ? '업로드 중...' : '서식 영구 등록'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Form Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-[24px] shadow-2xl border border-[#e5e7eb] max-w-lg w-full overflow-hidden">
+            <div className="p-6 border-b border-[#f1f5f9] flex items-center justify-between bg-[#f8fafc]">
+              <div>
+                <h2 className="text-lg font-bold text-[#17191c]">복지관 서식 정보 수정</h2>
+                <p className="text-xs text-[#64748b] mt-0.5">양식 명칭, 분류, 소관부서, 파일 등을 수정할 수 있습니다.</p>
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white border border-[#e2e8f0] flex items-center justify-center text-[#64748b] hover:text-[#17191c] cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {editError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-600 flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{editError}</span>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold text-[#17191c] mb-1.5">
+                  양식 명칭 (제목) <span className="text-[#03c75a]">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="예: 이용자 서비스 신청서 개정판"
+                  className="w-full px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-xs focus:outline-none focus:border-[#17191c]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#17191c] mb-1.5">
+                    구분 분류 <span className="text-[#03c75a]">*</span>
+                  </label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value as any)}
+                    className="w-full px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-xs focus:outline-none focus:border-[#17191c]"
+                  >
+                    <option value="이용자 양식">이용자 양식</option>
+                    <option value="활동지원사 양식">활동지원사 양식</option>
+                    <option value="행정양식 및 회계서류">행정양식 및 회계서류</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#17191c] mb-1.5">
+                    소관 부서
+                  </label>
+                  <input
+                    type="text"
+                    value={editDept}
+                    onChange={(e) => setEditDept(e.target.value)}
+                    placeholder="예: 활동지원팀"
+                    className="w-full px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-xs focus:outline-none focus:border-[#17191c]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#17191c] mb-1.5">
+                  서식 설명 및 용도
+                </label>
+                <textarea
+                  rows={3}
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  placeholder="서식의 작성 대상 및 관련 법정 지침, 제출 주기 등을 입력하세요."
+                  className="w-full p-3 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-xs focus:outline-none focus:border-[#17191c] resize-none leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#17191c] mb-1.5">
+                  새 한글/문서 파일 교체 첨부 (선택)
+                </label>
+                <div className="border-2 border-dashed border-[#e2e8f0] hover:border-[#17191c] rounded-2xl p-5 text-center transition-colors">
+                  <input
+                    type="file"
+                    id="form-edit-file"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setEditFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor="form-edit-file"
+                    className="cursor-pointer flex flex-col items-center justify-center space-y-1.5"
+                  >
+                    <Upload className="w-6 h-6 text-[#94a3b8]" />
+                    <span className="text-xs font-semibold text-[#17191c]">
+                      {editFile ? editFile.name : `기존 파일: ${editingForm?.fileName || '선택된 파일 없음'}`}
+                    </span>
+                    <span className="text-[10px] text-[#94a3b8]">
+                      새 파일로 교체하려면 클릭하여 파일을 선택하세요.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 rounded-full border border-[#d1d5db] text-xs font-semibold text-[#64748b] hover:bg-[#f8fafc]"
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  disabled={isEditing}
+                  className="px-5 py-2 rounded-full bg-[#17191c] hover:bg-[#2c2f35] text-white text-xs font-semibold cursor-pointer disabled:opacity-50 transition-all shadow-xs"
+                >
+                  {isEditing ? '수정 중...' : '수정 완료'}
                 </button>
               </div>
             </form>

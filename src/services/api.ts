@@ -134,7 +134,7 @@ const defaultSeedForms: DocForm[] = [
   {
     id: 'form-adm-1',
     title: '기관 표준 기안서 (일반 기안·보고용)',
-    category: '행정양식',
+    category: '행정양식 및 회계서류',
     department: '기획운영팀',
     description: '사내 공문 및 부서간 업무 협조, 결재 상신용 표준 한글 기안 서식입니다.',
     fileName: '기관표준_기안서_서식.hwp',
@@ -150,7 +150,7 @@ const defaultSeedForms: DocForm[] = [
   {
     id: 'form-adm-2',
     title: '지출결의서 및 품의서 양식',
-    category: '행정양식',
+    category: '행정양식 및 회계서류',
     department: '운영지원팀/회계',
     description: '물품 구매, 행사비, 사업운영비 집행 전 지출품의 및 집행 후 영수증 첨부 결의서입니다.',
     fileName: '표준_지출품의_및_지출결의서.hwp',
@@ -166,7 +166,7 @@ const defaultSeedForms: DocForm[] = [
   {
     id: 'form-adm-3',
     title: '휴가·연차·출장 신청서 (복무규정 서식)',
-    category: '행정양식',
+    category: '행정양식 및 회계서류',
     department: '인사팀/공통',
     description: '연차휴가, 특별휴가, 공가, 병가 및 대외 출장 신청 시 사용하는 복무 결재서식입니다.',
     fileName: '복무_휴가연차출장신청서.hwp',
@@ -182,7 +182,7 @@ const defaultSeedForms: DocForm[] = [
   {
     id: 'form-adm-4',
     title: '기관 대외 표준 공문서 양식',
-    category: '행정양식',
+    category: '행정양식 및 회계서류',
     department: '기획운영팀',
     description: '유관기관 및 지자체, 교육청, 협력기관 송부용 공식 수발신 공문서 표제 양식입니다.',
     fileName: '대외_표준공문서_표제양식.hwp',
@@ -198,7 +198,7 @@ const defaultSeedForms: DocForm[] = [
   {
     id: 'form-adm-5',
     title: '물품 구매(수리) 요구서 및 검수조서',
-    category: '행정양식',
+    category: '행정양식 및 회계서류',
     department: '운영지원팀/자산',
     description: '사무용품, 전자기기, 재활/치료용품 구입 요청 및 납품 완료 후 검수 시 작성하는 서식입니다.',
     fileName: '물품구매요구서_및_검수조서.hwp',
