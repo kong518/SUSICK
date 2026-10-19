@@ -12,6 +12,7 @@ import {
   Flame,
   CheckCircle2,
   TrendingUp,
+  Pencil,
 } from 'lucide-react';
 import { DocForm, User } from '../types';
 import { api } from '../services/api';
@@ -36,9 +37,67 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  // Edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingForm, setEditingForm] = useState<DocForm | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState<'이용자 양식' | '활동지원사 양식' | '행정양식'>('이용자 양식');
+  const [editDept, setEditDept] = useState('');
+  const [editDesc, setEditDesc] = useState('');
+  const [editFile, setEditFile] = useState<File | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+
   // Delete modal state
   const [deleteModalForm, setDeleteModalForm] = useState<DocForm | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  const handleOpenEdit = (form: DocForm) => {
+    if (!currentUser || (currentUser.role !== 'admin' && form.uploadedBy !== currentUser.id)) {
+      showToast('해당 양식 수정 권한이 없습니다.', 'error');
+      return;
+    }
+    setEditingForm(form);
+    setEditTitle(form.title);
+    setEditCategory(form.category as any);
+    setEditDept(form.department);
+    setEditDesc(form.description || '');
+    setEditFile(null);
+    setEditError(null);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingForm) return;
+    setEditError(null);
+
+    if (!editTitle.trim()) {
+      setEditError('양식 명칭을 입력해주세요.');
+      return;
+    }
+
+    setIsEditing(true);
+    try {
+      const formData = new FormData();
+      formData.append('title', editTitle);
+      formData.append('category', editCategory);
+      formData.append('department', editDept);
+      formData.append('description', editDesc);
+      if (editFile) {
+        formData.append('file', editFile);
+      }
+
+      const updated = await api.updateForm(editingForm.id, formData);
+      setForms((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
+      setIsEditModalOpen(false);
+      showToast(`[${updated.title}] 양식이 수정되었습니다.`, 'success');
+    } catch (err: any) {
+      setEditError(err.message || '수정 중 오류가 발생했습니다.');
+    } finally {
+      setIsEditing(false);
+    }
+  };
 
   const categories = ['전체', '실시간 TOP 4', '이용자 양식', '활동지원사 양식', '행정양식'];
 
@@ -289,14 +348,23 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
                       <span className="bg-white text-[#94a3b8] border border-[#e2e8f0] uppercase font-mono text-[10px] px-2 py-0.5 rounded-md">
                         .{form.fileExt}
                       </span>
-                      {currentUser?.role === 'admin' && (
-                        <button
-                          onClick={() => handleDeleteForm(form)}
-                          title="양식 삭제"
-                          className="text-[#94a3b8] hover:text-[#ef4444] transition-colors p-1 rounded-full hover:bg-[#fee2e2] cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      {(currentUser?.role === 'admin' || form.uploadedBy === currentUser?.id) && (
+                        <>
+                          <button
+                            onClick={() => handleOpenEdit(form)}
+                            title="양식 수정"
+                            className="text-[#94a3b8] hover:text-[#03c75a] transition-colors p-1 rounded-full hover:bg-[#e6f4ea] cursor-pointer"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteForm(form)}
+                            title="양식 삭제"
+                            className="text-[#94a3b8] hover:text-[#ef4444] transition-colors p-1 rounded-full hover:bg-[#fee2e2] cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>

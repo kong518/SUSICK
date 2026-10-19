@@ -403,6 +403,45 @@ export const api = {
     }
   },
 
+  async updateForm(id: string, formData: FormData): Promise<DocForm> {
+    const title = formData.get('title') as string;
+    const category = formData.get('category') as string;
+    const department = formData.get('department') as string;
+    const description = formData.get('description') as string;
+    const file = formData.get('file') as File | null;
+
+    try {
+      const docRef = doc(db, 'forms', 'all_data');
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists() && Array.isArray(docSnap.data()?.items)) {
+        let currentForms: DocForm[] = docSnap.data().items;
+        let updatedForm: DocForm | null = null;
+        currentForms = currentForms.map((f) => {
+          if (f.id === id) {
+            const fileExt = file ? file.name.split('.').pop() || f.fileExt : f.fileExt;
+            updatedForm = {
+              ...f,
+              title: title ? title.trim() : f.title,
+              category: category ? category.trim() : f.category,
+              department: department ? department.trim() : f.department,
+              description: description !== undefined ? description.trim() : f.description,
+              fileName: file ? file.name : f.fileName,
+              fileExt: file ? fileExt : f.fileExt,
+              fileSize: file ? file.size : f.fileSize,
+            };
+            return updatedForm;
+          }
+          return f;
+        });
+        await setDoc(docRef, { items: currentForms, updatedAt: new Date().toISOString() });
+        if (updatedForm) return updatedForm;
+      }
+      throw new Error('해당 양식을 찾을 수 없습니다.');
+    } catch (err: any) {
+      throw new Error(err.message || '양식 수정 중 오류가 발생했습니다.');
+    }
+  },
+
   getFormDownloadUrl(formId: string, user?: User | null): string {
     const params = new URLSearchParams();
     if (user) {
