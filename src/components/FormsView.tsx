@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   TrendingUp,
   Pencil,
-  Printer,
 } from 'lucide-react';
 import { DocForm, User } from '../types';
 import { api } from '../services/api';
@@ -53,14 +52,7 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
   const [deleteModalForm, setDeleteModalForm] = useState<DocForm | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Print modal state
-  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-  const [printForm, setPrintForm] = useState<DocForm | null>(null);
 
-  const handleOpenPrint = (form: DocForm) => {
-    setPrintForm(form);
-    setIsPrintModalOpen(true);
-  };
 
   const handleOpenEdit = (form: DocForm) => {
     if (!currentUser || (currentUser.role !== 'admin' && form.uploadedBy !== currentUser.id)) {
@@ -402,18 +394,11 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
                   </div>
                 </div>
 
-                {/* Card Footer: Print & Download Buttons */}
-                <div className="mt-4 pt-3 grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => handleOpenPrint(form)}
-                    className="py-2.5 px-3 rounded-full bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#17191c] text-xs font-semibold cursor-pointer transition-all flex items-center justify-center space-x-1"
-                  >
-                    <Printer className="w-3.5 h-3.5 text-[#03c75a]" />
-                    <span>바로 인쇄</span>
-                  </button>
+                {/* Card Footer: Download Button */}
+                <div className="mt-4 pt-3">
                   <button
                     onClick={() => handleDownloadForm(form)}
-                    className="py-2.5 px-3 rounded-full bg-[#17191c] hover:bg-[#2c2f35] text-white text-xs font-semibold cursor-pointer transition-all flex items-center justify-center space-x-1 shadow-xs"
+                    className="w-full py-2.5 px-4 rounded-full bg-[#17191c] hover:bg-[#2c2f35] text-white text-xs font-semibold cursor-pointer transition-all flex items-center justify-center space-x-1.5 shadow-xs active:scale-98"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>다운로드</span>
@@ -722,118 +707,6 @@ export const FormsView: React.FC<FormsViewProps> = ({ currentUser }) => {
         </div>
       )}
 
-      {/* Print Preview & Direct Print Modal */}
-      {isPrintModalOpen && printForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white rounded-[24px] shadow-2xl border border-[#e5e7eb] max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b border-[#f1f5f9] flex items-center justify-between bg-[#f8fafc] print:hidden">
-              <div className="flex items-center space-x-2">
-                <Printer className="w-5 h-5 text-[#03c75a]" />
-                <h2 className="text-base font-bold text-[#17191c]">공식 문서 인쇄 미리보기 (한글·PDF 서식 출력)</h2>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2 rounded-full bg-[#03c75a] hover:bg-[#02b350] text-white text-xs font-bold flex items-center space-x-1.5 cursor-pointer shadow-sm"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>인쇄하기 (PDF 저장)</span>
-                </button>
-                <button
-                  onClick={() => setIsPrintModalOpen(false)}
-                  className="w-8 h-8 rounded-full bg-white border border-[#e2e8f0] flex items-center justify-center text-[#64748b] hover:text-[#17191c] cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Print Document Content Sheet (Styled exactly like an official HWP document) */}
-            <div className="p-10 overflow-y-auto bg-gray-50 flex-1 flex justify-center">
-              <div className="bg-white w-full max-w-2xl p-12 shadow-md border border-gray-200 text-[#17191c] font-serif space-y-8 print:shadow-none print:border-none print:p-0">
-                
-                {/* Institution Header */}
-                <div className="text-center border-b-2 border-[#17191c] pb-6 space-y-2">
-                  <h1 className="text-xl font-black tracking-widest uppercase">수원시장애인종합복지관</h1>
-                  <p className="text-xs font-sans text-gray-600">SUWON COMMUNITY REHABILITATION CENTER</p>
-                  <div className="text-sm font-bold pt-2 text-[#03c75a]">{printForm.category} · {printForm.department}</div>
-                </div>
-
-                {/* Document Title & Metadata Box */}
-                <div className="space-y-4">
-                  <h2 className="text-lg font-bold text-center border border-[#17191c] p-4 bg-gray-50 leading-snug">
-                    {printForm.title}
-                  </h2>
-
-                  <div className="border border-gray-300 text-xs font-sans">
-                    <div className="grid grid-cols-2 border-b border-gray-300">
-                      <div className="p-2 border-r border-gray-300 bg-gray-50 font-semibold">문서번호: SW-FORM-2026-{printForm.id.substring(printForm.id.length - 4)}</div>
-                      <div className="p-2 bg-gray-50 font-semibold">시행일자: {new Date(printForm.createdAt).toLocaleDateString('ko-KR')}</div>
-                    </div>
-                    <div className="grid grid-cols-2">
-                      <div className="p-2 border-r border-gray-300 bg-gray-50 font-semibold">소관부서: {printForm.department}</div>
-                      <div className="p-2 bg-gray-50 font-semibold">첨부파일: {printForm.fileName}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Main Content Body */}
-                <div className="space-y-6 pt-2 font-sans text-xs leading-relaxed min-h-[200px] whitespace-pre-wrap">
-                  <div className="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-gray-800">
-                    <p className="font-bold mb-2">【 서식 개요 및 안내 】</p>
-                    <p>{printForm.description || '본 문서는 수원시장애인종합복지관 공식 표준 문서 서식입니다. 규정에 따라 정확하게 작성하여 제출해 주시기 바랍니다.'}</p>
-                  </div>
-
-                  <div className="space-y-4 pt-4 border-t border-gray-200">
-                    <p className="font-bold">1. 신청인(작성자) 인적사항</p>
-                    <div className="grid grid-cols-2 gap-2 text-gray-700">
-                      <div className="border p-2 rounded">성 명: ______________________</div>
-                      <div className="border p-2 rounded">연락처: ______________________</div>
-                      <div className="col-span-2 border p-2 rounded">주 소: ____________________________________________</div>
-                    </div>
-
-                    <p className="font-bold pt-2">2. 주요 내용 및 요청 사항</p>
-                    <div className="border p-4 rounded min-h-[100px] text-gray-600">
-                      [작성란]
-                    </div>
-                  </div>
-                </div>
-
-                {/* Official Signatures / Approval Table */}
-                <div className="pt-8 flex justify-end">
-                  <table className="border-collapse border border-gray-400 text-center text-xs font-sans w-64">
-                    <tbody>
-                      <tr>
-                        <td className="border border-gray-400 bg-gray-50 p-1 font-semibold">담당</td>
-                        <td className="border border-gray-400 bg-gray-50 p-1 font-semibold">팀장</td>
-                        <td className="border border-gray-400 bg-gray-50 p-1 font-semibold">관장</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 h-16 align-bottom pb-1 text-gray-500">(서명)</td>
-                        <td className="border border-gray-400 h-16 align-bottom pb-1 text-gray-500">(서명)</td>
-                        <td className="border border-gray-400 h-16 align-bottom pb-1 font-bold text-[#03c75a]">직인생략</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-[#f1f5f9] bg-[#f8fafc] flex items-center justify-between print:hidden">
-              <span className="text-[11px] text-[#64748b]">
-                * 한글(HWP) 및 PDF 원본과 동일한 공식 서식 레이아웃으로 즉시 인쇄 또는 PDF로 저장하실 수 있습니다.
-              </span>
-              <button
-                onClick={() => setIsPrintModalOpen(false)}
-                className="px-5 py-2 rounded-full border border-[#d1d5db] text-xs font-semibold text-[#64748b] hover:bg-white"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
