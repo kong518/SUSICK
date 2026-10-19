@@ -3,13 +3,11 @@ import { Header } from './components/Header';
 import { AuthGateView } from './components/AuthGateView';
 import { DashboardView } from './components/DashboardView';
 import { PdfToolsView } from './components/PdfToolsView';
-import { BackgroundRemovalView } from './components/BackgroundRemovalView';
 import { FormsView } from './components/FormsView';
 import { BoardView } from './components/BoardView';
 import { AdminView } from './components/AdminView';
 import { User } from './types';
 import { api } from './services/api';
-import { DecryptToolsView } from './components/DecryptToolsView';
 
 export default function App() {
   // Current user state (persisted to localStorage)
@@ -23,7 +21,6 @@ export default function App() {
   });
 
   const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [activeStampPng, setActiveStampPng] = useState<string | null>(null);
   const [pendingUsersCount, setPendingUsersCount] = useState<number>(0);
 
   // Load pending users count for admin notification
@@ -92,19 +89,7 @@ export default function App() {
         )}
 
         {activeTab === 'pdf-tools' && (
-          <PdfToolsView currentUser={currentUser} activeStampPng={activeStampPng} />
-        )}
-
-        {activeTab === 'decrypt-tools' && (
-          <DecryptToolsView currentUser={currentUser} />
-        )}
-
-        {activeTab === 'background-removal' && (
-          <BackgroundRemovalView
-            currentUser={currentUser}
-            onSetGeneratedStamp={(png) => setActiveStampPng(png)}
-            onNavigateToPdfEdit={() => setActiveTab('pdf-tools')}
-          />
+          <PdfToolsView currentUser={currentUser} />
         )}
 
         {activeTab === 'forms' && (

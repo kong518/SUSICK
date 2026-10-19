@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   FileText,
-  Scissors,
   Files,
   LayoutDashboard,
   ShieldAlert,
@@ -12,7 +11,6 @@ import {
   Flame,
   ArrowUp,
   Clock,
-  Unlock,
 } from 'lucide-react';
 import { User, DocForm } from '../types';
 import { api } from '../services/api';
@@ -185,29 +183,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span>PDF 통합 도구함</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('decrypt-tools')}
-            className={`flex items-center space-x-2 px-4 py-1.5 rounded-full transition-all whitespace-nowrap text-xs sm:text-sm cursor-pointer ${
-              activeTab === 'decrypt-tools'
-                ? 'bg-[#17191c] text-white shadow-xs font-bold'
-                : 'text-[#03c75a] bg-[#03c75a]/10 hover:bg-[#03c75a]/20 font-bold'
-            }`}
-          >
-            <Unlock className="w-3.5 h-3.5" />
-            <span>문서 암호해제(엑셀·한글·PDF)</span>
-          </button>
 
-          <button
-            onClick={() => setActiveTab('background-removal')}
-            className={`flex items-center space-x-2 px-4 py-1.5 rounded-full transition-all whitespace-nowrap text-xs sm:text-sm cursor-pointer ${
-              activeTab === 'background-removal'
-                ? 'bg-[#17191c] text-white shadow-xs font-bold'
-                : 'text-[#64748b] hover:text-[#17191c] hover:bg-[#f1f5f9]'
-            }`}
-          >
-            <Scissors className="w-3.5 h-3.5" />
-            <span>도장·서명 누끼따기</span>
-          </button>
 
           <button
             onClick={() => setActiveTab('board')}
