@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { AuthGateView } from './components/AuthGateView';
 import { DashboardView } from './components/DashboardView';
-import { PdfToolsView } from './components/PdfToolsView';
 import { FormsView } from './components/FormsView';
 import { BoardView } from './components/BoardView';
 import { AdminView } from './components/AdminView';
@@ -88,9 +87,7 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'pdf-tools' && (
-          <PdfToolsView currentUser={currentUser} />
-        )}
+
 
         {activeTab === 'forms' && (
           <FormsView

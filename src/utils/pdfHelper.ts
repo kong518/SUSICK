@@ -58,14 +58,12 @@ export const pdfHelper = {
     // Add pages from all files
     for (let i = 0; i < files.length; i++) {
       try {
-        const srcDoc = await PDFDocument.load(files[i].buffer);
+        const srcDoc = await PDFDocument.load(files[i].buffer, { ignoreEncryption: true });
         const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
         copiedPages.forEach((page) => mergedDoc.addPage(page));
       } catch (err) {
         console.error(`Failed to merge ${files[i].name}:`, err);
-        const srcDoc = await PDFDocument.load(files[i].buffer, { ignoreEncryption: true });
-        const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-        copiedPages.forEach((page) => mergedDoc.addPage(page));
+        throw err;
       }
     }
 

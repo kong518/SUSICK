@@ -171,19 +171,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>한글(HWP) 양식함</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('pdf-tools')}
-            className={`flex items-center space-x-2 px-4 py-1.5 rounded-full transition-all whitespace-nowrap text-xs sm:text-sm cursor-pointer ${
-              activeTab === 'pdf-tools'
-                ? 'bg-[#17191c] text-white shadow-xs font-bold'
-                : 'text-[#64748b] hover:text-[#17191c] hover:bg-[#f1f5f9]'
-            }`}
-          >
-            <Files className="w-3.5 h-3.5" />
-            <span>PDF 통합 도구함</span>
-          </button>
-
-
 
           <button
             onClick={() => setActiveTab('board')}
