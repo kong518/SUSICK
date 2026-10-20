@@ -29,9 +29,9 @@ try {
   }
   const dbId = firebaseConfig.firestoreDatabaseId;
   if (dbId) {
-    firestoreDb = adminAny.firestore(adminAny.app(), dbId);
+    firestoreDb = admin.firestore(admin.app(''), dbId);
   } else {
-    firestoreDb = adminAny.firestore();
+    firestoreDb = admin.firestore();
   }
   console.log('Firebase Admin Firestore initialized successfully with database ID:', dbId || '(default)');
 } catch (err: any) {
@@ -1365,6 +1365,50 @@ app.post('/api/audit-logs', (req, res) => {
   });
 
   return res.json({ success: true });
+});
+
+// --- 6. DECRYPTION (PDF & XLSX) ---
+app.post('/api/decrypt', multer().single('file'), async (req, res) => {
+  const { password } = req.body;
+  const file = req.file;
+
+  if (!file || !password) {
+    return res.status(400).json({ message: '파일과 비밀번호가 필요합니다.' });
+  }
+
+  try {
+    const ext = path.extname(file.originalname).toLowerCase();
+    
+    if (ext === '.pdf') {
+      const { PDFDocument } = await import('pdf-lib');
+      console.log('Attempting to load PDF with password length:', password ? password.length : 0);
+      try {
+        const pdfDoc = await PDFDocument.load(file.buffer, { password: password });
+        const decryptedBytes = await pdfDoc.save();
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="decrypted_${file.originalname}"`);
+        return res.send(Buffer.from(decryptedBytes));
+      } catch (pdfErr) {
+        console.error('pdf-lib loading error:', pdfErr);
+        throw pdfErr;
+      }
+    } else if (ext === '.xlsx' || ext === '.xls') {
+      const XLSX = await import('xlsx');
+      // For Excel, we read with password
+      const workbook = XLSX.read(file.buffer, { type: 'buffer', password: password });
+      const decryptedBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="decrypted_${file.originalname}"`);
+      return res.send(decryptedBuffer);
+    } else {
+      return res.status(400).json({ message: '지원되지 않는 파일 형식입니다.' });
+    }
+  } catch (error) {
+    console.error('Decryption error:', error);
+    return res.status(401).json({ message: '암호 해제 실패: 비밀번호가 틀렸거나 지원되지 않는 암호화 방식입니다.' });
+  }
 });
 
 // --- Vite Middleware or Static Servings ---

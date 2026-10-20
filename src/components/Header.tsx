@@ -11,7 +11,6 @@ import {
   Flame,
   ArrowUp,
   Clock,
-  Unlock,
 } from 'lucide-react';
 import { User, DocForm } from '../types';
 import { api } from '../services/api';
@@ -185,18 +184,6 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
 
-
-          <button
-            onClick={() => setActiveTab('decrypt-tools')}
-            className={`flex items-center space-x-2 px-4 py-1.5 rounded-full transition-all whitespace-nowrap text-xs sm:text-sm cursor-pointer ${
-              activeTab === 'decrypt-tools'
-                ? 'bg-[#17191c] text-white shadow-xs font-bold'
-                : 'text-[#03c75a] bg-[#03c75a]/10 hover:bg-[#03c75a]/20 font-bold'
-            }`}
-          >
-            <Unlock className="w-3.5 h-3.5" />
-            <span>문서 암호해제</span>
-          </button>
 
           <button
             onClick={() => setActiveTab('board')}
