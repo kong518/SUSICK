@@ -53,16 +53,10 @@ export const pdfHelper = {
   async mergePdfs(files: { name: string; buffer: ArrayBuffer }[]): Promise<Uint8Array> {
     if (files.length === 0) throw new Error('파일이 없습니다.');
 
-    // Load the first PDF as the base to avoid blank page issues
-    let mergedDoc: PDFDocument;
-    try {
-      mergedDoc = await PDFDocument.load(files[0].buffer);
-    } catch (err) {
-      mergedDoc = await PDFDocument.load(files[0].buffer, { ignoreEncryption: true });
-    }
+    const mergedDoc = await PDFDocument.create();
 
-    // Add pages from the remaining files
-    for (let i = 1; i < files.length; i++) {
+    // Add pages from all files
+    for (let i = 0; i < files.length; i++) {
       try {
         const srcDoc = await PDFDocument.load(files[i].buffer);
         const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
