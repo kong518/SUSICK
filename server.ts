@@ -29,7 +29,7 @@ try {
   }
   const dbId = firebaseConfig.firestoreDatabaseId;
   if (dbId) {
-    firestoreDb = admin.firestore(admin.app(''), dbId);
+    firestoreDb = admin.firestore(admin.apps[0], dbId);
   } else {
     firestoreDb = admin.firestore();
   }

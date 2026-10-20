@@ -54,26 +54,34 @@ export const pdfHelper = {
     const mergedDoc = await PDFDocument.create();
 
     for (const item of files) {
-      const srcDoc = await PDFDocument.load(item.buffer, { ignoreEncryption: true });
-      const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-      copiedPages.forEach((page) => mergedDoc.addPage(page));
+      try {
+        const srcDoc = await PDFDocument.load(item.buffer);
+        const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copiedPages.forEach((page) => mergedDoc.addPage(page));
+      } catch (err) {
+        console.error(`Failed to merge ${item.name}:`, err);
+        // Fallback for encrypted files: try with ignoreEncryption
+        const srcDoc = await PDFDocument.load(item.buffer, { ignoreEncryption: true });
+        const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copiedPages.forEach((page) => mergedDoc.addPage(page));
+      }
     }
 
-    return await mergedDoc.save();
+    return await mergedDoc.save({ useObjectStreams: false });
   },
 
   /**
    * Split PDF by extracting selected page indices (0-indexed)
    */
   async extractPages(sourceBuffer: ArrayBuffer, pageIndices: number[]): Promise<Uint8Array> {
-    const srcDoc = await PDFDocument.load(sourceBuffer, { ignoreEncryption: true });
+    const srcDoc = await PDFDocument.load(sourceBuffer);
     const newDoc = await PDFDocument.create();
 
     const validIndices = pageIndices.filter((idx) => idx >= 0 && idx < srcDoc.getPageCount());
     const copiedPages = await newDoc.copyPages(srcDoc, validIndices);
     copiedPages.forEach((page) => newDoc.addPage(page));
 
-    return await newDoc.save();
+    return await newDoc.save({ useObjectStreams: false });
   },
 
   /**
