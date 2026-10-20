@@ -387,17 +387,6 @@ export const PdfToolsView: React.FC<PdfToolsViewProps> = ({ currentUser, activeS
               <Scissors className="w-4 h-4" />
               <span>2. PDF 분리하기</span>
             </button>
-            <button
-              onClick={() => setActiveSubTab('edit')}
-              className={`flex items-center space-x-1.5 px-5 py-2 text-xs sm:text-sm font-semibold rounded-full transition-all cursor-pointer ${
-                activeSubTab === 'edit'
-                  ? 'bg-[#17191c] text-white shadow-xs'
-                  : 'text-[#777b86] hover:text-[#17191c]'
-              }`}
-            >
-              <Edit3 className="w-4 h-4" />
-              <span>3. 내용 삭제 및 수정</span>
-            </button>
           </div>
         </div>
       </div>

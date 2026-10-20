@@ -8,6 +8,7 @@ import { BoardView } from './components/BoardView';
 import { AdminView } from './components/AdminView';
 import { User } from './types';
 import { api } from './services/api';
+import { DecryptToolsView } from './components/DecryptToolsView';
 
 export default function App() {
   // Current user state (persisted to localStorage)
@@ -90,6 +91,10 @@ export default function App() {
 
         {activeTab === 'pdf-tools' && (
           <PdfToolsView currentUser={currentUser} />
+        )}
+
+        {activeTab === 'decrypt-tools' && (
+          <DecryptToolsView currentUser={currentUser} />
         )}
 
         {activeTab === 'forms' && (
