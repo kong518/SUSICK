@@ -51,17 +51,25 @@ export const pdfHelper = {
    * Merge multiple PDFs into one
    */
   async mergePdfs(files: { name: string; buffer: ArrayBuffer }[]): Promise<Uint8Array> {
-    const mergedDoc = await PDFDocument.create();
+    if (files.length === 0) throw new Error('파일이 없습니다.');
 
-    for (const item of files) {
+    // Load the first PDF as the base to avoid blank page issues
+    let mergedDoc: PDFDocument;
+    try {
+      mergedDoc = await PDFDocument.load(files[0].buffer);
+    } catch (err) {
+      mergedDoc = await PDFDocument.load(files[0].buffer, { ignoreEncryption: true });
+    }
+
+    // Add pages from the remaining files
+    for (let i = 1; i < files.length; i++) {
       try {
-        const srcDoc = await PDFDocument.load(item.buffer);
+        const srcDoc = await PDFDocument.load(files[i].buffer);
         const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
         copiedPages.forEach((page) => mergedDoc.addPage(page));
       } catch (err) {
-        console.error(`Failed to merge ${item.name}:`, err);
-        // Fallback for encrypted files: try with ignoreEncryption
-        const srcDoc = await PDFDocument.load(item.buffer, { ignoreEncryption: true });
+        console.error(`Failed to merge ${files[i].name}:`, err);
+        const srcDoc = await PDFDocument.load(files[i].buffer, { ignoreEncryption: true });
         const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
         copiedPages.forEach((page) => mergedDoc.addPage(page));
       }
