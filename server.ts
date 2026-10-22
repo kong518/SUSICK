@@ -21,17 +21,15 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Initialize Firebase Admin Firestore with explicit database ID
 let firestoreDb: any = null;
 try {
-  const adminAny = admin as any;
-  if (!adminAny.apps || !adminAny.apps.length) {
-    adminAny.initializeApp({
-      projectId: firebaseConfig.projectId,
-    });
-  }
   const dbId = firebaseConfig.firestoreDatabaseId;
+  const app = admin.apps && admin.apps.length > 0 ? admin.apps[0] : admin.initializeApp({
+    projectId: firebaseConfig.projectId,
+  });
+
   if (dbId) {
-    firestoreDb = admin.firestore(admin.apps[0], dbId);
+    firestoreDb = admin.firestore(app, dbId);
   } else {
-    firestoreDb = admin.firestore();
+    firestoreDb = admin.firestore(app);
   }
   console.log('Firebase Admin Firestore initialized successfully with database ID:', dbId || '(default)');
 } catch (err: any) {
@@ -1110,14 +1108,13 @@ app.get('/api/forms/:id/download', async (req, res) => {
 
   const filePath = path.join(FORMS_DIR, form.filePath);
   if (fs.existsSync(filePath)) {
-    return res.download(filePath, form.fileName);
+    // Correctly handle filenames with non-ASCII characters
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(form.fileName)}`);
+    return res.sendFile(filePath);
   }
 
-  // If physical file was missing, create valid HWP payload on the fly
-  const content = `HWP Document File V5.00\r\n\r\n【${form.title}】\n\n${form.description || '기관 표준 양식'}`;
-  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(form.fileName)}"`);
-  res.setHeader('Content-Type', 'application/x-hwp');
-  return res.send(Buffer.from(content, 'utf-8'));
+  // If physical file was missing, return 404
+  return res.status(404).json({ message: '파일이 서버에 존재하지 않습니다. 관리자에게 문의하세요.' });
 });
 
 // Delete form
